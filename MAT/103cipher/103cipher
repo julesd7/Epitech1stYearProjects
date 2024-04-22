@@ -1,0 +1,130 @@
+#!/usr/bin/python3
+
+import sys
+import math
+
+def get_encript_key(key, key_len, matrice_len):
+    encript_key = [[0 for x in range(matrice_len)] for y in range(matrice_len)]
+    z = 0
+    for i in range(matrice_len):
+        for y in range(matrice_len):
+            if z < key_len:
+                encript_key[i][y] = ord(key[z])
+            else:
+                encript_key[i][y] = 0
+            z += 1
+    return encript_key
+
+def get_decript_key(key, size):
+    for i in range(size):
+        for y in range(size):
+                key[i][y] *= -1
+    temp = key[0][0]
+    key[0][0] = key[size - 1][size - 1]
+    key[size - 1][size - 1] = temp
+    key[0][0] = abs(key[0][0])
+    key[size - 1][size - 1] = abs(key[size - 1][size - 1])
+
+    return key
+
+def get_matrice_size(key_len):
+    size = 0
+    i = 0
+    if key_len == 1:
+        return 1
+    while (i < key_len):
+        size += 1
+        i = pow(size, 2)
+    return size
+
+def display_matrice(code, e_key, d_key, m_size):
+    i = 0
+    if code == "0":
+        print("Key matrix:")
+        while (i < m_size):
+            for x in range(m_size):
+                print(e_key[i][x], end='')
+                if x + 1 < m_size:
+                    print("    ", end='')
+                else:
+                    print("", end='\n')
+            i += 1
+        print("", end='\n')
+        return 0
+    if code == "1":
+        print("Key matrix:")
+        while (i < m_size):
+            for x in range(m_size):
+                print(d_key[i][x], end='')
+                if x + 1 < m_size:
+                    print("    ", end='')
+                else:
+                    print("", end='\n')
+            i += 1
+        print("", end='\n')
+        return 0
+    sys.exit(84)
+
+def m_mul(m_msg, m_key, x):
+    m_len = len(m_msg)
+    result = 0
+    i = 0
+    while m_len > 0:
+        result += int(m_msg[i]) * int(m_key[i][x])
+        i += 1
+        m_len -= 1
+    return result
+
+
+def display_encript(result, e_key, msg_len, mat_size):
+    print("Encrypted message:")
+    for y in range(msg_len):
+        for x in range(mat_size):
+            print(result[y][x], end='')
+            if y == msg_len - 1 and x == mat_size - 1:
+                print("\n", end='')
+            else:
+                print(" ", end='')
+
+def get_msg(clear_msg, e_key_len, e_msg_len):
+    m_msg = [[0.00 for x in range(e_key_len)] for y in range(e_msg_len)]
+    c_msg_len = len(clear_msg)
+    z = 0
+
+    for y in range(e_msg_len):
+        for x in range(e_key_len):
+            if z < c_msg_len:
+                m_msg[y][x] = ord(clear_msg[z])
+            else:
+                m_msg[y][x] = 0.00
+            z += 1
+    return m_msg
+
+def main_function():
+    msg = sys.argv[1]
+    msg_len = len(msg)
+    key = sys.argv[2]
+    code = sys.argv[3]
+    key_len = len(key)
+    matrice_size = get_matrice_size(key_len)
+    e_key = get_encript_key(key, key_len, matrice_size)
+    if msg_len % matrice_size == 0:
+        e_msg_len = math.floor(msg_len / matrice_size)
+    else:
+        e_msg_len = msg_len / matrice_size
+        e_msg_len = math.floor(e_msg_len) + 1
+    if code == "1":
+        sys.exit(0)
+    mat_msg = get_msg(msg, matrice_size, e_msg_len)
+    encripted = [[0.00 for x in range(matrice_size)] for y in range(e_msg_len)]
+    for y in range(e_msg_len):
+        for x in range(matrice_size):
+            encripted[y][x] = m_mul(mat_msg[y], e_key, x)
+    display_matrice(code, e_key, 0, matrice_size)
+    display_encript(encripted, e_key, e_msg_len, matrice_size)
+
+
+if len(sys.argv) == 4:
+    main_function()
+else:
+    sys.exit(84)

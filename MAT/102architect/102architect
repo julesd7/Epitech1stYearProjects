@@ -1,0 +1,107 @@
+#!/usr/bin/python3
+
+EXIT_FAILURE = 84
+EXIT_SUCCESS = 0
+
+import sys
+import math
+
+z = ' '
+
+def print_help():
+    print(f"USAGE\n{z*4}./102architect x y transfo1 arg11 [arg12] [transfo2 arg21 [arg22]] ...\n")
+    print(f"DESCRIPTION\n{z*4}x{z*3}abscissa of the original point")
+    print(f"{z*4}y{z*3}ordinate of the original point\n")
+    print(f"{z*4}transfo arg1 [arg2]")
+    print(f"{z*4}-t i j  translation along vector (i, j)")
+    print(f"{z*4}-z m n  scaling by factors m (x-axis) and n (y-axis)")
+    print(f"{z*4}-r d    rotation centered in O by a d degree angle")
+    print(f"{z*4}-s d    reflection over the axis passing through O with an inclination")
+    print(f"{z*4}angle of d degrees")
+
+def translation(x, y, i, j):
+    print("Translation along vector (", int(i), ", ", int(j), ")", sep = "")
+
+def scaling(x, y, m, n):
+    print("Scaling by factors ", int(m), " and ", int(n), "", sep = "")
+
+
+def rotation(x, y, alpha):
+    print("Rotation by a ", int(alpha), " degree angle", sep = "")
+
+def symmetry(x, y, alpha):
+    print("Reflection over an axis with an inclination angle of ", int(alpha), " degrees", sep = "")
+
+def main_fonction():
+    try:
+        verif = 0
+        count = 0
+        opt = 0
+        if sys.argv[1] == "-h":
+            print_help()
+            return(EXIT_SUCCESS)
+        else:
+            x = float(sys.argv[1])
+            y = float(sys.argv[2])
+            intx = int(sys.argv[2])
+            inty = int(sys.argv[2])
+        matrice = [1.00, 0.00, 0.00,
+                   0.00, 1.00, 0.00,
+                   0.00, 0.00, 1.00]
+        i = 3
+        for i in range(len(sys.argv)):
+            try:
+                int(sys.argv[i])
+                verif = 0
+            except:
+                if i != 0:
+                    verif = 1
+                count = 0
+                opt = 0
+            if len(sys.argv) > 3 and ((count == 3 and opt == 2) or (count == 2 and opt == 1)):
+                sys.exit(84)
+            if sys.argv[i] == "-t":
+                translation(x, y, float(sys.argv[i + 1]), float(sys.argv[i + 2]))
+                matrice[2] = float(sys.argv[i + 1]) + matrice[2]
+                matrice[5] = float(sys.argv[i + 2]) + matrice[5]
+                verif = 2
+                opt = 2
+            if sys.argv[i] == "-z" :
+                scaling(x, y, float(sys.argv[i + 1]), float(sys.argv[i + 2]))
+                matrice[0] += float(sys.argv[i + 1]) * matrice[0]
+                matrice[4] = float(sys.argv[i + 2]) * matrice[4]
+                verif = 2
+                opt = 2
+            if sys.argv[i] == "-r":
+                rotation(x, y, float(sys.argv[i + 1]))
+                matrice[0] = math.cos(float(sys.argv[i + 1]) / 180 * math.pi)
+                matrice[1] = -math.sin(float(sys.argv[i + 1]) / 180 * math.pi)
+                matrice[3] = math.sin(float(sys.argv[i + 1]) / 180 * math.pi)
+                matrice[4] = matrice[0]
+                verif = 3
+                opt = 1
+            if sys.argv[i] == "-s":
+                symmetry(x, y, float(sys.argv[i + 1]))
+                matrice[0] = math.cos(2 * float(sys.argv[i + 1]) / 180 * math.pi)
+                matrice[1] = math.sin(2 * float(sys.argv[i + 1]) / 180 * math.pi)
+                matrice[3] = math.sin(2 * float(sys.argv[i + 1]) / 180 * math.pi)
+                matrice[4] = -matrice[0]
+                verif = 3
+                opt = 1
+            if verif == 1 and (sys.argv[i] != "-s" or sys.argv[i] != "-r" or\
+               sys.argv[i] != "-z" or sys.argv[i] != "-t"):
+               sys.exit(EXIT_FAILURE)
+            count = count + 1;
+        print("%.2f"%matrice[0], "\t%.2f"%matrice[1], "\t%.2f"%matrice[2])
+        print("%.2f"%matrice[3], "\t%.2f"%matrice[4], "\t%.2f"%matrice[5])
+        print("%.2f"%matrice[6], "\t%.2f"%matrice[7], "\t%.2f"%matrice[8])
+        before = (matrice[0] * x) + (matrice[1] * y) + matrice[2]
+        after = (matrice[3] * x) + (matrice[4] * y) + matrice[5]
+        print("(%.2f"%x,", %.2f"%y,") => (%.2f"%before,", %.2f"%after,")", sep = "")
+
+    except:
+        print("Error :")
+        print(f"{z*4}try -> ./102architect -h")
+        sys.exit(EXIT_FAILURE)
+
+main_fonction()

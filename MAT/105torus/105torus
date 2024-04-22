@@ -1,0 +1,105 @@
+#!/usr/bin/python3
+
+EXIT_FAILURE = 84
+EXIT_SUCCESS = 0
+
+import sys
+import math
+
+s = ' '
+
+def calc(a0, a1, a2, a3, a4, x):
+    res = ((a4 * (x**4)) + (a3 * (x**3)) + (a2 * (x**2)) + (a1 * x)  + a0)
+    return res
+
+def calc2(a1, a2, a3, a4, x):
+    res = ((4 * a4 * (x**3)) + (3 * a3 * (x**2)) + (2 * a2 * x) + a1)
+    return res
+
+def print_help():
+    print(f"USAGE\n{s*4}./105torus opt a0 a1 a2 a3 a4 n\n")
+    print(f"DESCRIPTION\n{s*4}opt{s*6}method option:")
+    print(f"{s*17}1 for the bisection method")
+    print(f"{s*17}2 for Newton’s method")
+    print(f"{s*17}3 for the secant method")
+    print(f"{s*4}a[0-4]{s*3}coefficients of the equation")
+    print(f"{s*4}n{s*8}precision (the application of the polynomial to the solution should be smaller than 10ˆ-n)")
+
+def bisection(a0, a1, a2, a3, a4, n):
+    a  = 0
+    b  = 1
+    c  = 0
+    d  = 1
+    a5 = calc(a0, a1, a2, a3, a4, a)
+
+    while (10**(-n) < abs(c - d)):
+        d = c
+        c = ((a + b) / 2)
+        if (a5 * calc(a0, a1, a2, a3, a4, c)) < 0:
+            b = c
+        else:
+            a = c
+        if (((10**n) * c) % 1) == 0:
+            print("x =", c)
+        else:
+            print("x = %.*f" % (n, c))
+
+def newton(a0, a1, a2, a3, a4, n):
+    a = 0.5
+    b = 0
+
+    while (10**(-n) < abs(b - a)):
+        b = a
+        if (((10**n) * a) % 1) == 0:
+            print("x =", a)
+        else:
+            print("x = %.*f" % (n, a))
+        a = a - (calc(a0, a1, a2, a3, a4, a) / calc2(a1, a2, a3, a4, a))
+
+def secant(a0, a1, a2, a3, a4, n):
+    a = 0
+    b = 1
+
+    while ((10**(-n)) < abs(a - b)):
+        c = b - ((b - a) / (calc(a0, a1, a2, a3, a4, b) - calc(a0, a1, a2, a3, a4, a))) * calc(a0, a1, a2, a3, a4, b)
+        a = b
+        b = c
+        if (((10 **n) * c) % 1) == 0:
+            print("x =", c)
+        else:
+            print("x = %.*f" % (n, c))
+
+
+def main_function():
+    try:
+        opt = int(sys.argv[1])
+        a0  = int(sys.argv[2])
+        a1  = int(sys.argv[3])
+        a2  = int(sys.argv[4])
+        a3  = int(sys.argv[5])
+        a4  = int(sys.argv[6])
+        n   = int(sys.argv[7])
+
+        if opt == 1:
+            bisection(a0, a1, a2, a3, a4, n)
+        if opt == 2:
+            newton(a0, a1, a2, a3, a4, n)
+        if opt == 3:
+            secant(a0, a1, a2, a3, a4, n)
+        if opt != 1 and opt != 2 and opt != 3:
+            sys.exit(EXIT_FAILURE)
+    except:
+        print(f"{s*4}try -> ./105torus -h")
+        sys.exit(EXIT_FAILURE)
+
+if len(sys.argv) == 8:
+    main_function()
+elif len(sys.argv) == 2:
+    if sys.argv[1] == "-h":
+        print_help()
+    else:
+        print(f"{s*4}try -> ./105torus -h")
+        sys.exit(EXIT_FAILURE)
+else:
+    print(f"{s*4}try -> ./105torus -h")
+    sys.exit(EXIT_FAILURE)

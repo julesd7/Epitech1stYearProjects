@@ -1,0 +1,77 @@
+#!/usr/bin/python3
+
+EXIT_FAILURE = 84
+EXIT_SUCCESS = 0
+
+import sys
+from math import sqrt, pow, degrees, acos
+
+x = ' '
+
+def print_help():
+    print(f"USAGE\n{x*4}./101pong x0 y0 z0 x1 y1 z1 n\n")
+    print(f"DESCRIPTION\n{x*4}x0 ball abscissa at time t - 1")
+    print(f"{x*4}y0 ball ordinate at time t - 1")
+    print(f"{x*4}z0 ball altitude at time t - 1")
+    print(f"{x*4}x1 ball abscissa at time t")
+    print(f"{x*4}y1 ball ordinate at time t")
+    print(f"{x*4}z1 ball altitude at time t")
+    print(f"{x*4}n time shift (greater than or equal to zero, integer)")
+
+def verify_numbers():
+    try:
+        float(sys.argv[1])
+        float(sys.argv[2])
+        float(sys.argv[3])
+        float(sys.argv[4])
+        float(sys.argv[5])
+        float(sys.argv[6])
+        int(sys.argv[7])
+
+        if int(sys.argv[7]) < 0:
+            sys.exit()
+    except:
+        sys.exit()
+
+def print_result():
+    velo_x = float(sys.argv[4]) - float(sys.argv[1])
+    velo_y = float(sys.argv[5]) - float(sys.argv[2])
+    velo_z = float(sys.argv[6]) - float(sys.argv[3])
+    velo = sqrt(pow(velo_x, 2) + pow(velo_y, 2) + pow(velo_z, 2))
+    coord_x = velo_x * int(sys.argv[7]) + float(sys.argv[4])
+    coord_y = velo_y * int(sys.argv[7]) + float(sys.argv[5])
+    coord_z = velo_z * int(sys.argv[7]) + float(sys.argv[6])
+    if velo == 0:
+        angle = 0
+    else:
+        angle = abs(90 - degrees(acos(velo_z / velo)))
+
+    print("The velocity vector of the ball is:")
+    print(f"({velo_x:.2f}, {velo_y:.2f}, {velo_z:.2f})")
+    print(f"At time t + {int(sys.argv[7])}, ball coordinates will be:")
+    print(f"({coord_x:.2f}, {coord_y:.2f}, {coord_z:.2f})")
+
+    if (float(sys.argv[6]) < 0 and velo_z > 0) or (velo_z < 0 and float(sys.argv[6]) > 0):
+        print("The incidence angle is:")
+        print(f"{angle:.2f} degrees")
+    else:
+        print("The ball won't reach the paddle.")
+
+def main_fonction():
+    try:
+        if sys.argv[1] == "-h":
+            print_help()
+            return(EXIT_SUCCESS)
+        if len(sys.argv) == 8:
+            verify_numbers()
+            print_result()
+            return(EXIT_SUCCESS)
+        else:
+            sys.exit()
+
+    except:
+        print("Error :")
+        print(f"{x*4}try -> ./101pong -h")
+        sys.exit(EXIT_FAILURE)
+
+main_fonction()

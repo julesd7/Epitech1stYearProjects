@@ -1,0 +1,101 @@
+#!/usr/bin/python3
+
+EXIT_FAILURE = 84
+EXIT_SUCCESS = 0
+
+import sys
+import math
+
+s = ' '
+
+def print_help():
+    print(f"USAGE\n{s*4}./104intersection opt xp yp zp xv yv zv p\n")
+    print(f"DESCRIPTION\n{s*4}opt{s*13}surface option: 1 for a sphere, 2 for a cylinder, 3 for a cone")
+    print(f"{s*4}(xp, yp, zp){s*4}coordinates of a point by which the light ray passes through")
+    print(f"{s*4}(xv, yv, zv){s*4}coordinates of a vector parallel to the light ray")
+    print(f"{s*4}p{s*15}parameter: radius of the sphere, radius of the cylinder, or angle formed by the cone and the Z-axis")
+
+def main_function():
+    try:
+        opt = int(sys.argv[1])
+        x = int(sys.argv[2])
+        y = int(sys.argv[3])
+        z = int(sys.argv[4])
+        Vx = int(sys.argv[5])
+        Vy = int(sys.argv[6])
+        Vz = int(sys.argv[7])
+        R = int(sys.argv[8])
+
+        if opt == 1:
+            print(f"Sphere of radius {R}")
+            a = float((Vx * Vx) + (Vy * Vy) + (Vz * Vz))
+            b = float((2 * (x * Vx)) + (2 * (y * Vy)) + (2 * (z * Vz)))
+            c = float(((x * x) + (y * y) + (z * z)) - (R * R))
+
+        if opt == 2:
+            print(f"Cylinder of radius {R}")
+            a = float((Vx * Vx) + (Vy * Vy))
+            b = float((2 * (x * Vx)) + (2 * (y * Vy)))
+            c = float(((x * x) + (y * y)) - (R * R))
+
+        if opt == 3:
+            print(f"Cone with a {R} degree angle")
+            a = float((Vx * Vx) + (Vy * Vy) - ((Vz * Vz) / (math.tan(R) * math.tan(R))))
+            b = float((2 * (x * Vx)) + (2 * (y * Vy)) - ((2 * z * Vz) / (math.tan(R) * math.tan(R))))
+            c = float(((x * x) + (y * y)) - ((z * z) / (math.tan(R) * math.tan(R))))
+
+        if opt > 3:
+            sys.exit(EXIT_FAILURE)
+
+        print(f"Line passing through the point {x, y, z} and parallel to the vector {Vx, Vy, Vz}")
+
+        delta = float((b * b) - ((4 * a) * c))
+
+        if delta < 0:
+            print("No intersection point.")
+        if delta == 0 and b != 0:
+            print("1 intersection point:")
+            x1 = float(-(b / 2 * a));
+            p1 = float(x + x1 * Vx)
+            p2 = float(y + x1 * Vy)
+            p3 = float(z + x1 * Vz)
+            presp1 = "{:.3f}".format(p1)
+            presp2 = "{:.3f}".format(p2)
+            presp3 = "{:.3f}".format(p3)
+            print(f"Point 1 : ({presp1}, {presp2}, {presp3})")
+        if delta == 0 and a == 0 and b == 0 and c == 0:
+            print("There is an infinite number of intersection points.")
+        if delta > 0:
+            print("2 intersections points:")
+            x1 = float(((-b) - math.sqrt(delta)) / (2 * a))
+            x2 = float(((-b) + math.sqrt(delta)) / (2 * a))
+            p1 = float(x + x2 * Vx)
+            p2 = float(y + x2 * Vy)
+            p3 = float(z + x2 * Vz)
+            p4 = float(x + x1 * Vx)
+            p5 = float(y + x1 * Vy)
+            p6 = float(z + x1 * Vz)
+            presp1 = "{:.3f}".format(p1)
+            presp2 = "{:.3f}".format(p2)
+            presp3 = "{:.3f}".format(p3)
+            presp4 = "{:.3f}".format(p4)
+            presp5 = "{:.3f}".format(p5)
+            presp6 = "{:.3f}".format(p6)
+            print(f"Point 1 : ({presp1}, {presp2}, {presp3})")
+            print(f"Point 2 : ({presp4}, {presp5}, {presp6})")
+
+    except:
+        print(f"{s*4}try -> ./104intersection -h")
+        sys.exit(EXIT_FAILURE)
+
+if len(sys.argv) == 9:
+    main_function()
+elif len(sys.argv) == 2:
+    if sys.argv[1] == "-h":
+        print_help()
+    else:
+        print(f"{s*4}try -> ./104intersection -h")
+        sys.exit(EXIT_FAILURE)
+else:
+    print(f"{s*4}try -> ./104intersection -h")
+    sys.exit(EXIT_FAILURE)
